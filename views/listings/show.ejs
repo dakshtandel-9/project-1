@@ -1,0 +1,64 @@
+<% layout('/layouts/boilerplate') -%>
+<body>
+    <div class="container mt-4">
+        <h3>Listing Details</h3>
+        <div class="row">
+            <!-- Left Side: Listing Image -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <img src="<%= listing.image.url %>" class="card-img-top showpage-img" alt="Listing Image">
+                </div>
+            </div>
+    
+            <!-- Right Side: Title, Price, Description, Edit/Delete Buttons -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">owned by <i><%= listing.owner.username %></i></p>
+                        <h5 class="card-title"><%= listing.title %></h5>
+                        <p class="card-text">Price: <%= listing.price %></p>
+                        <p class="card-text"><%= listing.description %></p>
+                    </div>
+                    <% if(currUser && currUser._id.equals(listing.owner._id)){ %>
+                    <div class="card-footer d-flex justify-content-end">
+                        <form action="/listing/edit/<%= listing._id %>" method="get">
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                        </form>
+                        <form action="/listing/<%= listing._id %>?_method=DELETE" method="POST" class="ml-2">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% if(currUser){ %>
+    <form action="/listing/<%= listing._id %>/reviews" method="post">
+        <div>
+            <label for="rating">Rating</label>
+            <input type="range" min="1" max="5" id="rating" name="review[rating]">
+        </div>
+        <div>
+            <label for="comment">Comment</label>
+            <textarea name="review[comment]" id="comment" required></textarea>
+        </div>
+        <button>submit</button>
+    </form>
+    <% } %>
+        <hr>
+        <div> 
+                <ul>
+                    <% for(let review of listing.reviews) { %>
+                        <li>
+                            <%- review.comment %>, <%- review.rating %>, <%- review.author.username %>
+                            <form method="post" action="/listing/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                <button>Delete</button>
+                            </form>
+                        </li>
+                    <% } %>
+                </ul>
+                
+        </div>
+    
+</body>
